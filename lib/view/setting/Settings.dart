@@ -262,6 +262,7 @@ class _MyHomePageState extends State<Settings> {
       barrierDismissible: false,
       context: context,
       builder: (context) => Dialog(
+        backgroundColor: Color(0xFFAD6A75),
         child: Container(
           height: 300,
           child: Column(
@@ -271,12 +272,125 @@ class _MyHomePageState extends State<Settings> {
                 alignment: Alignment.topRight,
                 child: Container(
                   alignment: Alignment.topRight,
-                  width: 70,
-                  height: 30,
+                  width: 60,
+                  height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.black26
+                    color: Color(0xFFEF7D90),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30.0)
+                    )
                   ),
                 ),
+              ),
+              Spacer(),
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Are you sure you want to delete your account?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Open Sans',
+                      color: Colors.white
+                  ),),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                child: Text("We won't be able to retrieve this account later.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Open Sans',
+                      color: Colors.white
+                  ),),
+              ),
+              Spacer(),
+              Stack(
+                children:[
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Container(
+                      alignment: Alignment.bottomLeft,
+                      width: 60,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: Color(0xFFEF7D90),
+                          borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(30.0)
+                          )
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 15.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: (){
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 40,
+                              alignment: Alignment.center,
+                              decoration: ShapeDecoration(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'No',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xFFEF7D90),
+                                  fontSize: 15,
+                                  fontFamily: 'Open Sans',
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            onTap: (){
+                              deleteUser();
+                            },
+                            child: Container(
+                              height: 40,
+                              alignment: Alignment.center,
+                              decoration: ShapeDecoration(
+                                color: Color(0xFFEF7D90),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                'Yes',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontFamily: 'Open Sans',
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ]
               )
             ],
           ),
