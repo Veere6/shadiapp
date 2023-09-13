@@ -455,6 +455,8 @@ class _MyHomePageState extends State<AddPhotos> {
                           }else{
                             Navigator.of(context).pushNamed('Intrests');
                           }
+                          }else if(imagelistfinal.length<2){
+                            Toaster.show(context, "Add at least 2 photos to continue");
                           }else{
                             Navigator.of(context).pushNamed('Intrests');
                           }

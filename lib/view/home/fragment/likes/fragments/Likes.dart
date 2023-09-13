@@ -21,10 +21,12 @@ class _LikesState extends State<Likes> {
   late ViewLikeSentModel _likeSentModel;
   late List<Datum> _list = [];
   bool isLoad = false;
+  String plan = "";
 
   Future<void> viewLike() async {
     isLoad = true;
     _preferences = await SharedPreferences.getInstance();
+    plan = _preferences.getString(ShadiApp.user_plan)!;
     _likeSentModel = await Services.ViewLike(_preferences.getString(ShadiApp.userId).toString());
     if(_likeSentModel.status == 1){
       for(var i = 0; i <  _likeSentModel.data!.length; i++){
@@ -91,7 +93,9 @@ class _LikesState extends State<Likes> {
       ),
     ):Container(
       margin: EdgeInsets.fromLTRB(20, 20, 20, 20),
-      child: _list.isNotEmpty ? GridView.builder(
+      child: _list.isNotEmpty ? plan == "Free" ? Center(
+        child: Text("No Likes", style: TextStyle(fontSize: 16, fontFamily: 'dubai', color: CommonColors.buttonorg, fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+      ) : GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 15.0,

@@ -1538,8 +1538,10 @@ class _MyHomePageState extends State<EditProfile>
                                 Verifyuser();
                               } else if (isVerified == 3) {
                                 Verifyuser();
-                              } else {
+                              } else if (isVerified == 2){
                                 Toaster.show(context, "Already Verified");
+                              } else {
+                                Toaster.show(context, "Already Request Sent");
                               }
                             },
                             child: Container(

@@ -678,8 +678,8 @@ class _MyHomePageState extends State<Profile> {
                             " ${_viewProfileModel.data![0].lastName![0].toUpperCase()+_viewProfileModel.data![0].lastName!.substring(1)}",style: new TextStyle(fontWeight: FontWeight.w600,fontSize: 20,color:Colors.white),),
                       ),
                     ),
-                   if(_viewProfileModel.data![0].isVerified == true) new SizedBox(width: 5,),
-                    if(_viewProfileModel.data![0].isVerified == true)  SizedBox(
+                   if(_viewProfileModel.data![0].isVerified == 2) new SizedBox(width: 5,),
+                    if(_viewProfileModel.data![0].isVerified == 2)  SizedBox(
                       height: 15,
                       width: 15,
                       child: Center(
