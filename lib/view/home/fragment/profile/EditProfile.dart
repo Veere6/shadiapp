@@ -171,7 +171,6 @@ class _MyHomePageState extends State<EditProfile>
   TextEditingController company = TextEditingController();
   TextEditingController education = TextEditingController();
   bool hasPermission = false;
-
   Future CheckUserConnection() async {
     try {
       hasPermission = await checkpermission2();
