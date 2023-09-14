@@ -136,6 +136,7 @@ class _ChatState extends State <Chat> {
     }
     return lastmsg;
   }
+
   Future<Timestamp> getLastmsgDate(String id) async {
    late Timestamp lastmsgtime;
     // Use await to wait for the query to complete
@@ -220,9 +221,10 @@ class _ChatState extends State <Chat> {
         .collection('chats');
 
     var querySnapshot = await snapshot
-        .where('uid',isEqualTo: user_id)
+        .where('uid',isNotEqualTo: user_id)
         .where('read',isEqualTo: false)
         .get();
+    print("object gfds ${querySnapshot.docs.length}");
     unreadCount = querySnapshot.size;
     // if (snapshot.docs.isNotEmpty) {
     //   var lastMessage = snapshot.docs as List;
@@ -627,7 +629,6 @@ class _ChatState extends State <Chat> {
                                                 textAlign: TextAlign.center,
                                               )
                                           ):
-
                                             Container(
                                                 alignment: Alignment.topCenter,
                                                 margin: EdgeInsets.only( right: 45.0,),

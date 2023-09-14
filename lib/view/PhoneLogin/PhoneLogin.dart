@@ -80,12 +80,12 @@ class _MyHomePageState extends State<PhoneLogin> {
   Future<void> ListCountry() async {
     _countryListModel = await Services.CountryList();
     if (_countryListModel.status == true){
-      _dialCode = "${_countryListModel?.data?.first?.phoneCode.toString()}"+" "+"${_countryListModel.data?.first?.name.toString()}";
+      _dialCode = "${_countryListModel?.data?.first?.phoneCode.toString()}"+" "+"${_countryListModel.data?.first?.countryCode}";
       for(var i = 0; i < _countryListModel.data!.length; i++){
-        countryList.add("${_countryListModel.data![i].phoneCode.toString()}"+" "+"${_countryListModel.data![i].name.toString()}");
+        countryList.add("${_countryListModel.data![i].phoneCode.toString()}"+" "+"${_countryListModel.data![i].countryCode.toString()}");
         countryitems.add(DropdownMenuItem(
           value: _countryListModel.data![i].phoneCode.toString(),
-          child: Text(_countryListModel.data![i].name.toString()),
+          child: Text(_countryListModel.data![i].countryCode.toString()),
         ));
       }
     }

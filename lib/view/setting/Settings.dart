@@ -1878,7 +1878,11 @@ class _MyHomePageState extends State<Settings> {
                               type: MaterialType.transparency,
                               child: InkWell(
                                 onTap: () {
-                                  Checkuser(_controllerusername.text);
+                                  if(user_plan=="Free"){
+                                    Toaster.show(context, "Please Purchase Any Package First");
+                                  }else {
+                                    Checkuser(_controllerusername.text);
+                                  }
                                 },
                                 splashColor: Colors.blue.withOpacity(0.2),
                                 customBorder: RoundedRectangleBorder(
