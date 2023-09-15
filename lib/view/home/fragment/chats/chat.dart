@@ -369,7 +369,7 @@ class _ChatState extends State <Chat> {
                     MatchDatum data = _list[index];
                     return InkWell(
                       onTap: (){
-                        if(user_plan=="Gold" || user_plan=="Vip"){
+                        if(user_plan=="Gold" || user_plan=="Vip" || user_plan == "Premium"){
                           print(user_plan);
                           CommonString.homesearch = "${data.id}";
                           Navigator.pushReplacement(context,
@@ -427,7 +427,7 @@ class _ChatState extends State <Chat> {
                                   ),
                                 ),
                               ),
-                             if(user_plan!="Gold" && user_plan!="Vip")
+                             if(user_plan!="Gold" && user_plan!="Vip" && user_plan != "Premium")
                                Positioned.fill(
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(15.0),

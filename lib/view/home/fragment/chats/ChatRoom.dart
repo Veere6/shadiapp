@@ -19,6 +19,7 @@ import 'package:shadiapp/Services/Services.dart';
 import 'package:shadiapp/ShadiApp.dart';
 import 'package:shadiapp/view/home/fragment/chats/audiocontroller/audiocontroller.dart';
 import 'package:shadiapp/view/home/fragment/chats/audiocontroller/chatcontroller.dart';
+import 'package:shadiapp/view/home/fragment/chats/chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -396,355 +397,361 @@ class _ChatRoom extends State<ChatRoom> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CommonColors.themeblack,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: IntrinsicHeight(
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 40.0),
-                height: 50,
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(widget.image),
-                  backgroundColor: CommonColors.bottomgrey,
+    return WillPopScope(
+      onWillPop: () async{
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Chat()), (route) => false);
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: CommonColors.themeblack,
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: IntrinsicHeight(
+            child: Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: 40.0),
+                  height: 50,
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(widget.image),
+                    backgroundColor: CommonColors.bottomgrey,
+                  ),
                 ),
-              ),
 
-              Container(
-                padding: const EdgeInsets.only(),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 18.5),
-                      alignment: Alignment.centerLeft,
-                      child: InkWell(
-                        onTap: (){
-                          Navigator.of(context).pop();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Image.asset(
-                            'assets/back_icon.png',
+                Container(
+                  padding: const EdgeInsets.only(),
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(left: 18.5),
+                        alignment: Alignment.centerLeft,
+                        child: InkWell(
+                          onTap: (){
+                            Navigator.of(context).pop();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Image.asset(
+                              'assets/back_icon.png',
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.only(right: 55, bottom: 10.0),
-                          child:  Text(
-                            "${widget.user_name}",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
-                          )
+                      Expanded(
+                        child: Container(
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.only(right: 55, bottom: 10.0),
+                            child:  Text(
+                              "${widget.user_name}",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
+                            )
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                  child: Container(
-                    child: Stack(
-                      children: [
-                       if(_firestore != null) Positioned(
-                          top: 10,
-                          bottom: 100,
-                          left: 0,
-                          right: 0,
-                          child: Container(
-                            color: Color(0xffE3E3E3),
-                            alignment: Alignment.bottomCenter,
-                            margin: const EdgeInsets.only(),
-                            child: StreamBuilder<QuerySnapshot>(
-                              stream: _firestore
-                                  .collection('chatroom')
-                                  .doc("${widget.room_id}")
-                                  .collection('chats')
-                                  .orderBy("time", descending: false)
-                                  .snapshots(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                                listMessage = snapshot.data?.docs ?? [];
-                                if (snapshot.data != null && luser_id!="") {
-                                  return ListView.builder(
-                                    // controller: _scrollController,
-                                    padding: const EdgeInsets.symmetric(vertical: 10),
-                                    itemCount: snapshot.data!.docs.length,
-                                    itemBuilder: (context, index) {
-                                      Map<String, dynamic> map = snapshot.data!.docs[index]
-                                          .data() as Map<String, dynamic>;
-                                      return Container(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: [
-                                            map['uid'] == luser_id ? Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                                Spacer(),
-                                                if (map['type'] == "text") Expanded(
-                                                  child: Container(
-                                                    alignment: Alignment.centerRight,
-                                                    margin: const EdgeInsets.only(
-                                                        right: 10, top: 10),
-                                                    padding: const EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
-                                                    decoration: const BoxDecoration(
-                                                      color: Color(0xffFCFDFF),
-                                                      borderRadius: BorderRadius.only(
-                                                          topLeft: Radius.circular(25),
-                                                          bottomRight:
-                                                          Radius.circular(25),
-                                                          bottomLeft:
-                                                          Radius.circular(25)),
-                                                    ),
+                Expanded(
+                    child: Container(
+                      child: Stack(
+                        children: [
+                         if(_firestore != null) Positioned(
+                            top: 10,
+                            bottom: 100,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              color: Color(0xffE3E3E3),
+                              alignment: Alignment.bottomCenter,
+                              margin: const EdgeInsets.only(),
+                              child: StreamBuilder<QuerySnapshot>(
+                                stream: _firestore
+                                    .collection('chatroom')
+                                    .doc("${widget.room_id}")
+                                    .collection('chats')
+                                    .orderBy("time", descending: false)
+                                    .snapshots(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  listMessage = snapshot.data?.docs ?? [];
+                                  if (snapshot.data != null && luser_id!="") {
+                                    return ListView.builder(
+                                      // controller: _scrollController,
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      itemCount: snapshot.data!.docs.length,
+                                      itemBuilder: (context, index) {
+                                        Map<String, dynamic> map = snapshot.data!.docs[index]
+                                            .data() as Map<String, dynamic>;
+                                        return Container(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: [
+                                              map['uid'] == luser_id ? Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                  Spacer(),
+                                                  if (map['type'] == "text") Expanded(
                                                     child: Container(
-                                                      alignment: Alignment.centerLeft,
-                                                      child: Text(
-                                                        map['message'],
-                                                        textAlign: TextAlign.start,
+                                                      alignment: Alignment.centerRight,
+                                                      margin: const EdgeInsets.only(
+                                                          right: 10, top: 10),
+                                                      padding: const EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
+                                                      decoration: const BoxDecoration(
+                                                        color: Color(0xffFCFDFF),
+                                                        borderRadius: BorderRadius.only(
+                                                            topLeft: Radius.circular(25),
+                                                            bottomRight:
+                                                            Radius.circular(25),
+                                                            bottomLeft:
+                                                            Radius.circular(25)),
+                                                      ),
+                                                      child: Container(
+                                                        alignment: Alignment.centerLeft,
+                                                        child: Text(
+                                                          map['message'],
+                                                          textAlign: TextAlign.start,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                                if (map['type'] == "audio")
-                                                  _audio(
-                                                      message: map['message'],
-                                                      isCurrentUser: map['uid'] == widget.user_id,
-                                                      index: index)
-                                              ],
-                                            ):
-                                            Row(
-                                              mainAxisAlignment:  MainAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  margin: EdgeInsets.only(top: 20.0),
-                                                  height: 50,
-                                                  child: CircleAvatar(
-                                                    radius: 30,
-                                                    backgroundImage: NetworkImage(widget.image),
-                                                    backgroundColor: CommonColors.bottomgrey,
-                                                  ),
-                                                ),
-                                                if (map['type'] == "text")  Expanded(
-                                                  child: Container(
-                                                    margin: const EdgeInsets.only( right: 10, top: 10),
-                                                    padding: const EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
-                                                    decoration: const BoxDecoration(
-                                                      color: Color(0xffFCFCFC),
-                                                      borderRadius: BorderRadius.only(
-                                                          topLeft: Radius.circular(20),
-                                                          bottomRight: Radius.circular(20),
-                                                          topRight: Radius.circular(20)),
+                                                  if (map['type'] == "audio")
+                                                    _audio(
+                                                        message: map['message'],
+                                                        isCurrentUser: map['uid'] == widget.user_id,
+                                                        index: index)
+                                                ],
+                                              ):
+                                              Row(
+                                                mainAxisAlignment:  MainAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    margin: EdgeInsets.only(top: 20.0),
+                                                    height: 50,
+                                                    child: CircleAvatar(
+                                                      radius: 30,
+                                                      backgroundImage: NetworkImage(widget.image),
+                                                      backgroundColor: CommonColors.bottomgrey,
                                                     ),
+                                                  ),
+                                                  if (map['type'] == "text")  Expanded(
                                                     child: Container(
-                                                      alignment: Alignment.centerLeft,
-                                                      child: Text(map['message']),
+                                                      margin: const EdgeInsets.only( right: 10, top: 10),
+                                                      padding: const EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
+                                                      decoration: const BoxDecoration(
+                                                        color: Color(0xffFCFCFC),
+                                                        borderRadius: BorderRadius.only(
+                                                            topLeft: Radius.circular(20),
+                                                            bottomRight: Radius.circular(20),
+                                                            topRight: Radius.circular(20)),
+                                                      ),
+                                                      child: Container(
+                                                        alignment: Alignment.centerLeft,
+                                                        child: Text(map['message']),
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                if (map['type'] == "audio")
-                                                  _audio(
-                                                      message: map['message'],
-                                                      isCurrentUser: map['uid'] == widget.user_id,
-                                                      index: index
-                                                  ),
-                                                Spacer(),
-                                                // Container(
-                                                //   margin: EdgeInsets.only(right: 20.0),
-                                                //   child: Icon(
-                                                //     CupertinoIcons.heart_fill,
-                                                //     color: Colors.white,
-                                                //   ),
-                                                // ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  return Container();
-                                }
-                              },
-                            ),
-                            // ListView.builder(
-                            //     shrinkWrap: false,
-                            //     scrollDirection: Axis.vertical,
-                            //     itemCount: messageList.length,
-                            //     physics: AlwaysScrollableScrollPhysics(),
-                            //     itemBuilder: (context, index){
-                            //       return Container(
-                            //         child: Column(
-                            //           crossAxisAlignment: CrossAxisAlignment.end,
-                            //           children: [
-                            //             Row(
-                            //               mainAxisAlignment: MainAxisAlignment.start,
-                            //               children: [
-                            //                 Container(
-                            //                   margin: EdgeInsets.only(top: 20.0),
-                            //                   height: 50,
-                            //                   child: CircleAvatar(
-                            //                     radius: 30,
-                            //                     backgroundImage: NetworkImage(widget.image),
-                            //                     backgroundColor: CommonColors.bottomgrey,
-                            //                   ),
-                            //                 ),
-                            //                 Container(
-                            //                   margin: const EdgeInsets.only( right: 10, top: 10),
-                            //                   padding: const EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
-                            //                   decoration: const BoxDecoration(
-                            //                     color: Color(0xffFCFCFC),
-                            //                     borderRadius: BorderRadius.only(
-                            //                         topLeft: Radius.circular(20),
-                            //                         bottomRight: Radius.circular(20),
-                            //                         topRight: Radius.circular(20)),
-                            //                   ),
-                            //                   child: Container(
-                            //                     alignment: Alignment.centerLeft,
-                            //                     child: Text(messageList[index]),
-                            //                   ),
-                            //                 ),
-                            //                 Spacer(),
-                            //                 Container(
-                            //                   margin: EdgeInsets.only(right: 20.0),
-                            //                   child: Icon(
-                            //                     CupertinoIcons.heart_fill,
-                            //                     color: Colors.white,
-                            //                   ),
-                            //                 ),
-                            //               ],
-                            //             ),
-                            //             Row(
-                            //               mainAxisAlignment: MainAxisAlignment.end,
-                            //               children: [
-                            //                 Container(
-                            //                   alignment: Alignment.centerRight,
-                            //                   margin: const EdgeInsets.only(
-                            //                       right: 10, top: 10),
-                            //                   padding: const EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
-                            //                   decoration: const BoxDecoration(
-                            //                     color: Color(0xffFCFDFF),
-                            //                     borderRadius: BorderRadius.only(
-                            //                         topLeft: Radius.circular(25),
-                            //                         bottomRight:
-                            //                         Radius.circular(25),
-                            //                         bottomLeft:
-                            //                         Radius.circular(25)),
-                            //                   ),
-                            //                   child: Container(
-                            //                     alignment: Alignment.centerLeft,
-                            //                     child: Text(
-                            //                       reciveList[index],
-                            //                       textAlign: TextAlign.start,
-                            //                     ),
-                            //                   ),
-                            //                 ),
-                            //               ],
-                            //             )
-                            //           ],
-                            //         ),
-                            //       );
-                            //     }),
-                          ),
-                        ),
-                        Positioned(
-                          right: 20,
-                          left: 30,
-                          bottom: 25,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  // width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xffFFFFFF),
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    alignment: Alignment.topLeft,
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                            child: Container(
-                                              margin: const EdgeInsets.only(
-                                                  top: 0, right: 20, left: 20),
-                                              child: TextField(
-                                                controller: _message,
-                                                keyboardType: TextInputType.text,
-                                                maxLines: 1,
-                                                decoration: InputDecoration(
-                                                  hintStyle: TextStyle(
-                                                      fontSize: 13, fontWeight: FontWeight.w400,
-                                                      color: Colors.black),
-                                                  hintText: 'Type a message',
-                                                  border: InputBorder.none,
-                                                  // contentPadding:
-                                                  // const EdgeInsets.all(20),
-                                                ),
-                                              ),
-                                            )
-                                        ),
-                                        InkWell(
-                                          onTap:(){
-                                            onSendMessage(widget.user_id,"${firstName} ${lastName}","text",_message.text);
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.only(right: 10.0),
-                                            child: Text("Send",
-                                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400,
-                                                  color: Colors.black),),
+                                                  if (map['type'] == "audio")
+                                                    _audio(
+                                                        message: map['message'],
+                                                        isCurrentUser: map['uid'] == widget.user_id,
+                                                        index: index
+                                                    ),
+                                                  Spacer(),
+                                                  // Container(
+                                                  //   margin: EdgeInsets.only(right: 20.0),
+                                                  //   child: Icon(
+                                                  //     CupertinoIcons.heart_fill,
+                                                  //     color: Colors.white,
+                                                  //   ),
+                                                  // ),
+                                                ],
+                                              )
+                                            ],
                                           ),
-                                        ),
-
-                                        // SizedBox(
-                                        //   width: 10,
-                                        // )
-                                      ],
-                                    )),
-                              ),
-                              GestureDetector(
-                                child: Container(
-                                    margin: EdgeInsets.only(right: 0.0, left: 20.0),
-                                    child: SizedBox(
-                                        height: 28,
-                                        width: 20,
-                                        child: Image.asset("assets/chat_mic.png",color: micOn
-                                            ? CommonColors.buttonorg
-                                            : Colors.white,))
-                                ),
-                                onLongPress: () async {
-                                  // var audioPlayer = AudioPlayer();
-                                  // await audioPlayer.setAsset('assets/Notification.mp3');
-                                  // await audioPlayer.play();
-                                  // await audioPlayer.play(AssetSource("Notification.mp3"));
-                                  // audioPlayer.playerStateStream.listen((playerState) {
-                                  //   if (playerState.processingState == ProcessingState.completed) {
-                                  //     audioController.start.value = DateTime.now();
-                                      startRecord();
-                                  //     audioController.isRecording.value = true;
-                                  //   }
-                                  // });
-                                  // audioPlayer.onPlayerComplete.listen((a) {
-                                  //   audioController.start.value = DateTime.now();
-                                  //   startRecord();
-                                  //   audioController.isRecording.value = true;
-                                  // });
-                                },
-                                onLongPressEnd: (details) {
-                                  stopRecord();
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
                                 },
                               ),
-                            ],
+                              // ListView.builder(
+                              //     shrinkWrap: false,
+                              //     scrollDirection: Axis.vertical,
+                              //     itemCount: messageList.length,
+                              //     physics: AlwaysScrollableScrollPhysics(),
+                              //     itemBuilder: (context, index){
+                              //       return Container(
+                              //         child: Column(
+                              //           crossAxisAlignment: CrossAxisAlignment.end,
+                              //           children: [
+                              //             Row(
+                              //               mainAxisAlignment: MainAxisAlignment.start,
+                              //               children: [
+                              //                 Container(
+                              //                   margin: EdgeInsets.only(top: 20.0),
+                              //                   height: 50,
+                              //                   child: CircleAvatar(
+                              //                     radius: 30,
+                              //                     backgroundImage: NetworkImage(widget.image),
+                              //                     backgroundColor: CommonColors.bottomgrey,
+                              //                   ),
+                              //                 ),
+                              //                 Container(
+                              //                   margin: const EdgeInsets.only( right: 10, top: 10),
+                              //                   padding: const EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
+                              //                   decoration: const BoxDecoration(
+                              //                     color: Color(0xffFCFCFC),
+                              //                     borderRadius: BorderRadius.only(
+                              //                         topLeft: Radius.circular(20),
+                              //                         bottomRight: Radius.circular(20),
+                              //                         topRight: Radius.circular(20)),
+                              //                   ),
+                              //                   child: Container(
+                              //                     alignment: Alignment.centerLeft,
+                              //                     child: Text(messageList[index]),
+                              //                   ),
+                              //                 ),
+                              //                 Spacer(),
+                              //                 Container(
+                              //                   margin: EdgeInsets.only(right: 20.0),
+                              //                   child: Icon(
+                              //                     CupertinoIcons.heart_fill,
+                              //                     color: Colors.white,
+                              //                   ),
+                              //                 ),
+                              //               ],
+                              //             ),
+                              //             Row(
+                              //               mainAxisAlignment: MainAxisAlignment.end,
+                              //               children: [
+                              //                 Container(
+                              //                   alignment: Alignment.centerRight,
+                              //                   margin: const EdgeInsets.only(
+                              //                       right: 10, top: 10),
+                              //                   padding: const EdgeInsets.only(left: 10, top: 5, right: 20, bottom: 5),
+                              //                   decoration: const BoxDecoration(
+                              //                     color: Color(0xffFCFDFF),
+                              //                     borderRadius: BorderRadius.only(
+                              //                         topLeft: Radius.circular(25),
+                              //                         bottomRight:
+                              //                         Radius.circular(25),
+                              //                         bottomLeft:
+                              //                         Radius.circular(25)),
+                              //                   ),
+                              //                   child: Container(
+                              //                     alignment: Alignment.centerLeft,
+                              //                     child: Text(
+                              //                       reciveList[index],
+                              //                       textAlign: TextAlign.start,
+                              //                     ),
+                              //                   ),
+                              //                 ),
+                              //               ],
+                              //             )
+                              //           ],
+                              //         ),
+                              //       );
+                              //     }),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ))
-            ],
+                          Positioned(
+                            right: 20,
+                            left: 30,
+                            bottom: 25,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    // width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xffFFFFFF),
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      alignment: Alignment.topLeft,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              child: Container(
+                                                margin: const EdgeInsets.only(
+                                                    top: 0, right: 20, left: 20),
+                                                child: TextField(
+                                                  controller: _message,
+                                                  keyboardType: TextInputType.text,
+                                                  maxLines: 1,
+                                                  decoration: InputDecoration(
+                                                    hintStyle: TextStyle(
+                                                        fontSize: 13, fontWeight: FontWeight.w400,
+                                                        color: Colors.black),
+                                                    hintText: 'Type a message',
+                                                    border: InputBorder.none,
+                                                    // contentPadding:
+                                                    // const EdgeInsets.all(20),
+                                                  ),
+                                                ),
+                                              )
+                                          ),
+                                          InkWell(
+                                            onTap:(){
+                                              onSendMessage(widget.user_id,"${firstName} ${lastName}","text",_message.text);
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.only(right: 10.0),
+                                              child: Text("Send",
+                                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400,
+                                                    color: Colors.black),),
+                                            ),
+                                          ),
+
+                                          // SizedBox(
+                                          //   width: 10,
+                                          // )
+                                        ],
+                                      )),
+                                ),
+                                GestureDetector(
+                                  child: Container(
+                                      margin: EdgeInsets.only(right: 0.0, left: 20.0),
+                                      child: SizedBox(
+                                          height: 28,
+                                          width: 20,
+                                          child: Image.asset("assets/chat_mic.png",color: micOn
+                                              ? CommonColors.buttonorg
+                                              : Colors.white,))
+                                  ),
+                                  onLongPress: () async {
+                                    // var audioPlayer = AudioPlayer();
+                                    // await audioPlayer.setAsset('assets/Notification.mp3');
+                                    // await audioPlayer.play();
+                                    // await audioPlayer.play(AssetSource("Notification.mp3"));
+                                    // audioPlayer.playerStateStream.listen((playerState) {
+                                    //   if (playerState.processingState == ProcessingState.completed) {
+                                    //     audioController.start.value = DateTime.now();
+                                        startRecord();
+                                    //     audioController.isRecording.value = true;
+                                    //   }
+                                    // });
+                                    // audioPlayer.onPlayerComplete.listen((a) {
+                                    //   audioController.start.value = DateTime.now();
+                                    //   startRecord();
+                                    //   audioController.isRecording.value = true;
+                                    // });
+                                  },
+                                  onLongPressEnd: (details) {
+                                    stopRecord();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ))
+              ],
+            ),
           ),
         ),
       ),

@@ -7,10 +7,13 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shadiapp/CommonMethod/CommonColors.dart';
 import 'package:shadiapp/CommonMethod/StarRating.dart';
 import 'package:shadiapp/CommonMethod/Toaster.dart';
 import 'package:shadiapp/CommonMethod/commonString.dart';
+import 'package:shadiapp/Models/add_location_model.dart';
 import 'package:shadiapp/Models/age_height_range_model.dart';
 import 'package:shadiapp/Models/like_model.dart';
 import 'package:shadiapp/Models/user_detail_model.dart';
@@ -45,6 +48,7 @@ class _MyHomePageState extends State<HomeSearch> {
   late UserViewPreferenceModel _viewPreferenceModel;
   late LikeModel _likeModel;
   late UserDetailModel _userDetailModel = UserDetailModel();
+  late AddLocationModel _addLocationModel;
   late PersistentBottomSheetController _bottomSheetController; // instance variable
   List<UserDatum> _userList = [];
   List<PrefsDatum> intrest = [];
@@ -164,11 +168,28 @@ class _MyHomePageState extends State<HomeSearch> {
     });
   }
 
+  Future<void> location() async {
+    var status = await Permission.location.request();
+    if(status  == PermissionStatus.granted){
+      _preferences = await SharedPreferences.getInstance();
+      final currentLocation = await Geolocator.getCurrentPosition();
+      _addLocationModel = await Services.AddLocation({"userId":"${_preferences?.getString(ShadiApp.userId)}","lng":"${currentLocation.longitude}","lat":"${currentLocation.latitude}"});
+    }else if (status == PermissionStatus.denied) {
+      // Permission denied
+    } else if (status == PermissionStatus.permanentlyDenied) {
+      // Permission permanently denied, take the user to app settings
+    }
+    setState(() {
+
+    });
+  }
+
   @override
   void initState() {
     userDetail();
     CheckUserConnection();
     Getdata("");
+    location();
     // userList();
     super.initState();
   }
@@ -183,6 +204,9 @@ class _MyHomePageState extends State<HomeSearch> {
     // String jsonStu = jsonEncode(datastring);
     // var data = jsonDecode(jsonStu);
     // content = Content.fromJson(data);
+    setState(() {
+      isLoad=true;
+    });
     setState(() {
       isshowhome=false;
     });
@@ -233,6 +257,9 @@ class _MyHomePageState extends State<HomeSearch> {
         print("works");
       });
     }
+    setState(() {
+      isLoad=false;
+    });
   }
 
 
@@ -272,7 +299,7 @@ class _MyHomePageState extends State<HomeSearch> {
       body: Container(
           child: isLoad ? Center(
             child: CircularProgressIndicator(
-              color: Colors.black,
+              color: Colors.white,
               strokeWidth: 3.0,
             ),
           ):Stack(
@@ -528,7 +555,7 @@ class _MyHomePageState extends State<HomeSearch> {
                                                             ),
                                                            if(_userList[index].age.toString()!="null" || _userList[index].age.toString()!="")
                                                              Text(
-                                                               "  ${_userList[index].age}",
+                                                               "  ${_userList[index].age ?? ""}",
                                                               style: TextStyle(
                                                                 color: Colors.white,
                                                                 fontSize: 20,

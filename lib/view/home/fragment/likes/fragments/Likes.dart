@@ -93,9 +93,7 @@ class _LikesState extends State<Likes> {
       ),
     ):Container(
       margin: EdgeInsets.fromLTRB(20, 20, 20, 20),
-      child: _list.isNotEmpty ? plan == "Free" ? Center(
-        child: Text("Please Purcahse Any Package for see Likes", style: TextStyle(fontSize: 16, fontFamily: 'dubai', color: CommonColors.buttonorg, fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-      ) : GridView.builder(
+      child: _list.isNotEmpty ? GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 15.0,
