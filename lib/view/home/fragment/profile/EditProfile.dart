@@ -1639,8 +1639,10 @@ class _MyHomePageState extends State<EditProfile>
                                 Verifyuser();
                               } else if (isVerified == 3) {
                                 Verifyuser();
-                              } else {
+                              } else if (isVerified == 2){
                                 Toaster.show(context, "Already Verified");
+                              } else {
+                                Toaster.show(context, "Already Request Sent");
                               }
                             },
                             child: Container(
@@ -3567,7 +3569,11 @@ class _MyHomePageState extends State<EditProfile>
                                   child: CupertinoSwitch(
                                     value: is_age,
                                     onChanged: (value) {
-                                      if(user_plan!="Free") is_age = value;
+                                      if(user_plan!="Free"){
+                                        is_age = value;
+                                      }else{
+                                        Toaster.show(context, "Please Purchase Any Package First");
+                                      }
                                       setState(() {});
                                     },
                                     thumbColor: is_age
@@ -3610,7 +3616,11 @@ class _MyHomePageState extends State<EditProfile>
                                   child: CupertinoSwitch(
                                     value: is_height,
                                     onChanged: (value) {
-                                      if(user_plan!="Free") is_height = value;
+                                      if(user_plan!="Free") {
+                                        is_height = value;
+                                      }else{
+                                        Toaster.show(context, "Please Purchase Any Package First");
+                                      }
                                       setState(() {});
                                     },
                                     thumbColor: is_height
@@ -3653,7 +3663,9 @@ class _MyHomePageState extends State<EditProfile>
                                   child: CupertinoSwitch(
                                     value: is_weight,
                                     onChanged: (value) {
-                                      if(user_plan!="Free") is_weight = value;
+                                      if(user_plan!="Free") {is_weight = value;}else{
+                                        Toaster.show(context, "Please Purchase Any Package First");
+                                      }
                                       setState(() {});
                                     },
                                     thumbColor: is_weight
@@ -3696,7 +3708,9 @@ class _MyHomePageState extends State<EditProfile>
                                   child: CupertinoSwitch(
                                     value: is_smoke,
                                     onChanged: (value) {
-                                      if(user_plan!="Free") is_smoke = value;
+                                      if(user_plan!="Free") {is_smoke = value;}else{
+                                        Toaster.show(context, "Please Purchase Any Package First");
+                                      }
                                       setState(() {});
                                     },
                                     thumbColor: is_smoke
@@ -3739,7 +3753,9 @@ class _MyHomePageState extends State<EditProfile>
                                   child: CupertinoSwitch(
                                     value: is_drink,
                                     onChanged: (value) {
-                                      if(user_plan!="Free") is_drink = value;
+                                      if(user_plan!="Free") {is_drink = value;}else{
+                                        Toaster.show(context, "Please Purchase Any Package First");
+                                      }
                                       setState(() {});
                                     },
                                     thumbColor: is_drink
@@ -3782,7 +3798,9 @@ class _MyHomePageState extends State<EditProfile>
                                   child: CupertinoSwitch(
                                     value: is_diet,
                                     onChanged: (value) {
-                                      if(user_plan!="Free") is_diet = value;
+                                      if(user_plan!="Free") {is_diet = value;}else{
+                                        Toaster.show(context, "Please Purchase Any Package First");
+                                      }
                                       setState(() {});
                                     },
                                     thumbColor: is_diet

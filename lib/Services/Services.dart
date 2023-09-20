@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:shadiapp/Models/CasteModel.dart';
 import 'package:shadiapp/Models/DropdownModel.dart';
 import 'package:shadiapp/Models/ReligionModel.dart';
+import 'package:shadiapp/Models/add_location_model.dart';
 import 'package:shadiapp/Models/age_height_range_model.dart';
 import 'package:shadiapp/Models/city_list_model.dart';
 import 'package:shadiapp/Models/country_list_model.dart';
@@ -74,6 +75,7 @@ class Services {
   static String UserDelete = BaseUrl + "delete/account";
   static String ImageUpdate = BaseUrl + "user/updateImage/";
   static String subscribePlan = BaseUrl + "subscribePlan";
+  static String location = BaseUrl + "location";
 
   static Future<PhoneLoginModel> LoginCrdentials(String phone) async {
     final params = {
@@ -918,6 +920,24 @@ class Services {
     } else {
       var data = jsonDecode(response.body);
       UpdateSettingModel user = UpdateSettingModel.fromJson(data);
+      return user;
+
+    }
+  }
+  static Future<AddLocationModel> AddLocation(final object) async{
+    final params = object;
+    print("AddLocation " + params.toString());
+    http.Response response =
+    await http.post(Uri.parse(location), body: params);
+    print("AddLocation" + response.body);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      AddLocationModel user = AddLocationModel.fromJson(data);
+      return user;
+    } else {
+      var data = jsonDecode(response.body);
+      AddLocationModel user = AddLocationModel.fromJson(data);
       return user;
 
     }

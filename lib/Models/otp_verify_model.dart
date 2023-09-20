@@ -48,6 +48,7 @@ class Data {
   String? phone;
   String? createdBy;
   String? token;
+  String? plan;
   int? otp;
   bool? isBlocked;
   bool? isSuspended;
@@ -66,6 +67,7 @@ class Data {
     this.phone,
     this.createdBy,
     this.token,
+    this.plan,
     this.otp,
     this.isBlocked,
     this.isSuspended,
@@ -85,6 +87,7 @@ class Data {
     phone: json["phone"] == null ? null : json["phone"],
     createdBy: json["created_by"] == null ? null : json["created_by"],
     token: json["token"] == null ? null : json["token"],
+    plan: json["plan"] == null ? null : json["plan"],
     otp: json["otp"] == null ? null : json["otp"],
     isBlocked: json["is_Blocked"] == null ? null : json["is_Blocked"],
     isSuspended: json["is_suspended"] == null ? null : json["is_suspended"],
@@ -104,6 +107,7 @@ class Data {
     "phone": phone == null ? null : phone,
     "created_by": createdBy == null ? null : createdBy,
     "token": token == null ? null : token,
+    "plan": plan == null ? null : plan,
     "otp": otp == null ? null : otp,
     "is_Blocked": isBlocked == null ? null : isBlocked,
     "is_suspended": isSuspended == null ? null : isSuspended,

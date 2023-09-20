@@ -21,10 +21,12 @@ class _LikesState extends State<Likes> {
   late ViewLikeSentModel _likeSentModel;
   late List<Datum> _list = [];
   bool isLoad = false;
+  String plan = "";
 
   Future<void> viewLike() async {
     isLoad = true;
     _preferences = await SharedPreferences.getInstance();
+    plan = _preferences.getString(ShadiApp.user_plan)!;
     _likeSentModel = await Services.ViewLike(_preferences.getString(ShadiApp.userId).toString());
     if(_likeSentModel.status == 1){
       for(var i = 0; i <  _likeSentModel.data!.length; i++){

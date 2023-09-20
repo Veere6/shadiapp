@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:shadiapp/CommonMethod/CommonColors.dart';
 import 'package:shadiapp/CommonMethod/StarRating.dart';
 import 'package:shadiapp/CommonMethod/Toaster.dart';
+import 'package:shadiapp/CommonMethod/commonString.dart';
 import 'package:shadiapp/Models/new_matches_model.dart';
 import 'package:shadiapp/Services/Services.dart';
 import 'package:shadiapp/ShadiApp.dart';
+import 'package:shadiapp/view/home/Home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
@@ -44,10 +46,12 @@ class _MyHomePageState extends State<MatchPro> {
   }
 
   String user_plan="";
+  String plan="";
   Future<void> match() async {
     isLoad = true;
     _preferences = await SharedPreferences.getInstance();
     user_plan = _preferences.getString(ShadiApp.userId).toString();
+    plan = _preferences.getString(ShadiApp.user_plan).toString();
     _newMatchesModel = await Services.NewMatchesList(_preferences.getString(ShadiApp.userId).toString());
     if(_newMatchesModel.status == 1){
       for(var i = 0; i < _newMatchesModel.data!.length; i++){
@@ -128,7 +132,9 @@ class _MyHomePageState extends State<MatchPro> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _list.isNotEmpty ? Expanded(
+                    _list.isNotEmpty ? plan == "Free"? Container(
+                      child: Text("Please Purchase Any Package",style: TextStyle(color: Colors.white),),
+                    ):Expanded(
                       child: ListView.builder(
                         // shrinkWrap: true,
                         itemCount: _list.length,
@@ -151,52 +157,66 @@ class _MyHomePageState extends State<MatchPro> {
                               setState(() {
                                 selectindex=index;
                               });
+                              if(user_plan=="Gold" || user_plan=="Vip"){
+                                print(user_plan);
+                                CommonString.homesearch = "${data.id}";
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(builder: (context) => Home()));
+                              }
                             },
-                            child: new Container(
-                              width: MediaQuery.of(context).size.width/3,
-                              height: MediaQuery.of(context).size.width/2,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Positioned(
-                                    bottom: 10,
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width/3.5,
-                                      height: MediaQuery.of(context).size.width/2-50,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(width: 1,color: colorList[position]),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15.0) //                 <--- border radius here
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(15.0),
-                                          child: Image.network(data.image.toString(),fit: BoxFit.cover,height: 180,width: 180,),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  Positioned(
-                                    bottom: 0,
-                                    child: Container(
-                                        margin: const EdgeInsets.only(right: 5,top:5),
+                            child: InkWell(
+                                onTap: (){
+                                    print(user_plan);
+                                    CommonString.homesearch = "${data.id}";
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(builder: (context) => Home()));
+                                },
+                              child: new Container(
+                                width: MediaQuery.of(context).size.width/3,
+                                height: MediaQuery.of(context).size.width/2,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Positioned(
+                                      bottom: 10,
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width/3.5,
+                                        height: MediaQuery.of(context).size.width/2-50,
                                         decoration: BoxDecoration(
-                                          color: colorList[position],
-                                          borderRadius: BorderRadius.circular(30),
+                                          border: Border.all(width: 1,color: colorList[position]),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(15.0) //                 <--- border radius here
+                                          ),
                                         ),
-                                        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 3),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text("${data.plan}",style: new TextStyle(fontSize: 11,fontWeight: FontWeight.w700,color: Colors.white),),
-                                          ],
-                                        )
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(15.0),
+                                            child: Image.network(data.image.toString(),fit: BoxFit.cover,height: 180,width: 180,),
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
+
+                                    // Positioned(
+                                    //   bottom: 0,
+                                    //   child: Container(
+                                    //       margin: const EdgeInsets.only(right: 5,top:5),
+                                    //       decoration: BoxDecoration(
+                                    //         color: colorList[position],
+                                    //         borderRadius: BorderRadius.circular(30),
+                                    //       ),
+                                    //       padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 3),
+                                    //       child: Row(
+                                    //         mainAxisSize: MainAxisSize.min,
+                                    //         // children: [
+                                    //         //   Text("${data.plan}",style: new TextStyle(fontSize: 11,fontWeight: FontWeight.w700,color: Colors.white),),
+                                    //         // ],
+                                    //       )
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
                               ),
                             ),
                           ):InkWell(
@@ -217,7 +237,7 @@ class _MyHomePageState extends State<MatchPro> {
                                       width: MediaQuery.of(context).size.width/3.5,
                                       height: MediaQuery.of(context).size.width/2-50,
                                       decoration: BoxDecoration(
-                                        border: Border.all(width: 1,color: colorList[position]),
+                                        // border: Border.all(width: 1,color: colorList[position]),
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(15.0) //                 <--- border radius here
                                         ),
