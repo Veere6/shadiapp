@@ -87,8 +87,8 @@ class _ChatState extends State <Chat> {
     // isonline = _preferences?.getBool(ShadiApp.isOnline) ?? false;
     await _firestore
         .collection('chatroom')
-        // .where("uid1", isEqualTo: "${user_id}")
-        // .where("uid2",isEqualTo: "${user_id}")
+    // .where("uid1", isEqualTo: "${user_id}")
+    // .where("uid2",isEqualTo: "${user_id}")
         .get()
         .then((value) {
       print(value.docs);
@@ -96,7 +96,7 @@ class _ChatState extends State <Chat> {
       isLoading = false;
       listbool=false;
       // if(mounted) {
-        setState(() {});
+      setState(() {});
       // }
     });
   }
@@ -137,7 +137,7 @@ class _ChatState extends State <Chat> {
     return lastmsg;
   }
   Future<Timestamp> getLastmsgDate(String id) async {
-   late Timestamp lastmsgtime;
+    late Timestamp lastmsgtime;
     // Use await to wait for the query to complete
     await _firestore
         .collection('chatroom')
@@ -178,9 +178,9 @@ class _ChatState extends State <Chat> {
     int minutes = difference.inMinutes % 60;
 
     if (days > 0) {
-      return '${days} D';
+      return '${days}D';
     } else if (hours > 0) {
-      return '${hours} H';
+      return '${hours}H';
     } else {
       return '${minutes} M';
     }
@@ -249,54 +249,54 @@ class _ChatState extends State <Chat> {
       endDrawer: Drawer(
         width: 180,
         backgroundColor: CommonColors.matchDrawer,
-    child: ListView(
-    padding: EdgeInsets.zero,
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(top: 70.0),
-          child: Text(
-              'My Matches',
-              style: TextStyle(fontSize: 16.0, color: CommonColors.buttonorg),
-              textAlign: TextAlign.center,
-            ),
-        ),
-        Expanded(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height-150,
-            child: Container(
-                  height: double.maxFinite,
-                  child: ListView.builder(
-                      itemCount: _matchList.length,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context, i) {
-                        return ListTile(
-                          title: Container(
-                            width: 120,
-                            height: 150,
-                            margin: EdgeInsets.fromLTRB(10, 0, 10, 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(15.0)),
-                              color: CommonColors.bottomgrey,
-                            ),
-                            child:
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(15.0),
-                                child: Image.network("${_matchList[i].image}",
-                                  fit: BoxFit.cover,
-                                )
-                            ),
-                          ),
-                        );
-                      }
-                  )
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: 70.0),
+              child: Text(
+                'My Matches',
+                style: TextStyle(fontSize: 16.0, color: CommonColors.buttonorg),
+                textAlign: TextAlign.center,
               ),
-          ),
-        )
-      ],
-    ),
-    ),
+            ),
+            Expanded(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height-150,
+                child: Container(
+                    height: double.maxFinite,
+                    child: ListView.builder(
+                        itemCount: _matchList.length,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, i) {
+                          return ListTile(
+                            title: Container(
+                              width: 120,
+                              height: 150,
+                              margin: EdgeInsets.fromLTRB(10, 0, 10, 20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0)),
+                                color: CommonColors.bottomgrey,
+                              ),
+                              child:
+                              ClipRRect(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  child: Image.network("${_matchList[i].image}",
+                                    fit: BoxFit.cover,
+                                  )
+                              ),
+                            ),
+                          );
+                        }
+                    )
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -352,11 +352,11 @@ class _ChatState extends State <Chat> {
               ],
             ),
             if(_list.isNotEmpty) Container(
-                margin: EdgeInsets.symmetric(horizontal: 35.0),
-                child: Text("Likes you ${_list.length}",
-                  style: TextStyle(color: CommonColors.buttonorg),
-                ),
+              margin: EdgeInsets.symmetric(horizontal: 35.0),
+              child: Text("Likes you ${_list.length}",
+                style: TextStyle(color: CommonColors.buttonorg),
               ),
+            ),
             if(_list.isNotEmpty) Container(
               margin: EdgeInsets.only(left: 25.0, top: 10.0, right: 0.0, bottom: 10.0),
               height: 100,
@@ -380,7 +380,7 @@ class _ChatState extends State <Chat> {
                         decoration: index==0 ? BoxDecoration(
                             borderRadius: BorderRadius.all(
                                 Radius.circular(15.0)),
-                          border: Border.all(color: Colors.yellow,width: 2)
+                            border: Border.all(color: Colors.yellow,width: 2)
                         ):null,
                         child: Container(
                           width: 80,
@@ -425,21 +425,21 @@ class _ChatState extends State <Chat> {
                                   ),
                                 ),
                               ),
-                             if(user_plan!="Gold" && user_plan!="Vip")
-                               Positioned.fill(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                      sigmaX: 3.0,
-                                      sigmaY: 3.0,
-                                    ),
-                                    child: Container(
-                                      color: Colors.black.withOpacity(0.2),
+                              if(user_plan!="Gold" && user_plan!="Vip")
+                                Positioned.fill(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 3.0,
+                                        sigmaY: 3.0,
+                                      ),
+                                      child: Container(
+                                        color: Colors.black.withOpacity(0.2),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
@@ -450,7 +450,7 @@ class _ChatState extends State <Chat> {
             listbool==false ? Expanded(
               child: Container(
                 child:
-              isLoad==false ?  matchList?.data?.isEmpty ?? false ?
+                isLoad==false ?  matchList?.data?.isEmpty ?? false ?
                 Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -535,17 +535,17 @@ class _ChatState extends State <Chat> {
                                         Row(
                                           children: [
                                             Container(
-                                              margin: EdgeInsets.only(left: 13.0),
-                                              child: Text("${username}",
-                                              // child: Text("${_matchList[index].firstName} ${_matchList[index].lastName}",
-                                                style: TextStyle(
-                                                  color: Colors.white, fontSize: 16,
-                                                    fontWeight: FontWeight.w500, fontStyle: FontStyle.normal
-                                                ),
-                                              )
+                                                margin: EdgeInsets.only(left: 13.0),
+                                                child: Text("${username}",
+                                                  // child: Text("${_matchList[index].firstName} ${_matchList[index].lastName}",
+                                                  style: TextStyle(
+                                                      color: Colors.white, fontSize: 16,
+                                                      fontWeight: FontWeight.w500, fontStyle: FontStyle.normal
+                                                  ),
+                                                )
                                             ),
                                             SizedBox(width: 10,),
-                                           if(isOnline==true) StreamBuilder(
+                                            if(isOnline==true) StreamBuilder(
                                               stream: FirebaseDatabase.instance
                                                   .reference()
                                                   .child('users/${userid}/status')
@@ -612,21 +612,21 @@ class _ChatState extends State <Chat> {
                                           return
                                             snapshot.data != 0 ?
                                             Container(
-                                              height: 26,
-                                              width: 26,
-                                              margin: EdgeInsets.only(right: 45.0),
-                                              decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                  color:CommonColors.themeblack
-                                              ),
-                                              alignment: Alignment.center,
-                                              child: Text("${snapshot.data.toString()}",
-                                                style: TextStyle(
-                                                    color: Color(0xffEF7D90), fontSize: 15,fontWeight: FontWeight.w400
+                                                height: 26,
+                                                width: 26,
+                                                margin: EdgeInsets.only(right: 45.0),
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    color:CommonColors.themeblack
                                                 ),
-                                                textAlign: TextAlign.center,
-                                              )
-                                          ):
+                                                alignment: Alignment.center,
+                                                child: Text("${snapshot.data.toString()}",
+                                                  style: TextStyle(
+                                                      color: Color(0xffEF7D90), fontSize: 15,fontWeight: FontWeight.w400
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                )
+                                            ):
 
                                             Container(
                                                 alignment: Alignment.topCenter,
@@ -667,7 +667,7 @@ class _ChatState extends State <Chat> {
                         ),
                       ):Container();
                     }
-                    ):Container(),
+                ):Container(),
               ),
             ) :
             Expanded(child: Center(child: CircularProgressIndicator(),))
