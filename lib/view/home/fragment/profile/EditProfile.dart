@@ -906,7 +906,7 @@ class _MyHomePageState extends State<EditProfile>
       if (hasPermission) {
         recordFilePath = await getFilePath();
         recorder = AnotherAudioRecorder(recordFilePath,
-            audioFormat: AudioFormat.AAC,sampleRate: 22000); // .wav .aac .m4a
+            audioFormat: AudioFormat.AAC); // .wav .aac .m4a
         await recorder.initialized;
         await recorder.start();
         await recorder.current(channel: 0);
@@ -924,6 +924,7 @@ class _MyHomePageState extends State<EditProfile>
 
   void stopRecord() async {
     try {
+      await recorder.pause();
       var result = await recorder.stop();
       if (result != null) {
         recordFilePath = result.path ?? "";

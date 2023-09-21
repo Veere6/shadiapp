@@ -249,7 +249,7 @@ class _ChatRoom extends State<ChatRoom> {
       });
       recordFilePath = await getFilePath();
 
-      recorder = AnotherAudioRecorder(recordFilePath,audioFormat: AudioFormat.AAC,sampleRate: 22000); // .wav .aac .m4a
+      recorder = AnotherAudioRecorder(recordFilePath,audioFormat: AudioFormat.AAC); // .wav .aac .m4a
       await recorder.initialized;
 
       await recorder.start();
@@ -268,6 +268,7 @@ class _ChatRoom extends State<ChatRoom> {
 
   void stopRecord() async {
     try {
+      await recorder.pause();
       var result = await recorder.stop();
       if (result != null) {
         recordFilePath = result.path ?? "";
