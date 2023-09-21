@@ -727,7 +727,6 @@ class _MyHomePageState extends State<EditProfile>
   @override
   void initState() {
     CheckUserConnection();
-    _init();
     ListCountry();
     viewImage();
     userDetail();
@@ -895,150 +894,57 @@ class _MyHomePageState extends State<EditProfile>
   }
 
   bool micOn = false;
-  AnotherAudioRecorder? _recorder;
-  Recording? _current;
-  RecordingStatus _currentStatus = RecordingStatus.Unset;
-  _init() async {
+
+  void startRecord() async {
     try {
-      if (await AnotherAudioRecorder.hasPermissions) {
-        String customPath = '/another_audio_recorder_';
-        io.Directory appDocDirectory;
-//        io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
-        if (io.Platform.isIOS) {
-          appDocDirectory = await getApplicationDocumentsDirectory();
-        } else {
-          appDocDirectory = (await getExternalStorageDirectory())!;
-        }
-
-        // can add extension like ".mp4" ".wav" ".m4a" ".aac"
-        customPath = appDocDirectory.path +
-            customPath +
-            DateTime.now().millisecondsSinceEpoch.toString();
-
-        // .wav <---> AudioFormat.WAV
-        // .mp4 .m4a .aac <---> AudioFormat.AAC
-        // AudioFormat is optional, if given value, will overwrite path extension when there is conflicts.
-        _recorder =
-            AnotherAudioRecorder(customPath, audioFormat: AudioFormat.AAC);
-
-        await _recorder?.initialized;
-        // after initialization
-        var current = await _recorder?.current(channel: 0);
-        print(current);
-        // should be "Initialized", if all working fine
-        setState(() {
-          _current = current;
-          _currentStatus = current!.status!;
-          print(_currentStatus);
-        });
-      } else {
-            openAppSettings();
-            Fluttertoast.showToast(
-                msg: 'Permission is not granted', backgroundColor: Colors.grey);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  _start() async {
-    try {
-      await _recorder?.start();
-      var recording = await _recorder?.current(channel: 0);
       setState(() {
-        _current = recording;
+        micOn = true;
       });
-
-      const tick = const Duration(milliseconds: 50);
-      new Timer.periodic(tick, (Timer t) async {
-        if (_currentStatus == RecordingStatus.Stopped) {
-          t.cancel();
-        }
-
-        var current = await _recorder?.current(channel: 0);
-        // print(current.status);
-        setState(() {
-          _current = current;
-          _currentStatus = _current!.status!;
-        });
-      });
-    } catch (e) {
-      print(e);
+      if (audioController.isRecordPlaying) {
+        audioController.PauseAudio();
+      }
+      if (hasPermission) {
+        recordFilePath = await getFilePath();
+        recorder = AnotherAudioRecorder(recordFilePath,
+            audioFormat: AudioFormat.AAC,sampleRate: 22000); // .wav .aac .m4a
+        await recorder.initialized;
+        await recorder.start();
+        await recorder.current(channel: 0);
+        Toaster.show(context, "Start Recording"); // });
+      } else {
+        openAppSettings();
+        Fluttertoast.showToast(
+            msg: 'Permission is not granted', backgroundColor: Colors.grey);
+      }
+      setState(() {});
+    }catch(e){
+      print(">>>>>>${e}");
     }
   }
 
-  _resume() async {
-    await _recorder?.resume();
-    setState(() {});
+  void stopRecord() async {
+    try {
+      var result = await recorder.stop();
+      if (result != null) {
+        recordFilePath = result.path ?? "";
+        _playAudio = "upload";
+        audioController.isRecording.value = false;
+        audioController.isSending.value = true;
+        Toaster.show(context, "Stop Recording");
+        setState(() {
+          micOn = false;
+        });
+      }
+      // ClearRecorder();
+    } catch(e) {
+      print(">>>>>>${e}");
+    }
   }
 
-  _pause() async {
-    await _recorder?.pause();
-    setState(() {});
-  }
-
-  _stop() async {
-    var result = await _recorder?.stop();
-    print("Stop recording: ${result?.path}");
-    print("Stop recording: ${result?.duration}");
-    // File file = widget.localFileSystem.file(result?.path);
-    // print("File length: ${await file.length()}");
-    setState(() {
-      recordFilePath = result?.path ?? "";
-      _playAudio = "upload";
-      audioController.isRecording.value = false;
-      audioController.isSending.value = true;
-      _current = result;
-      _currentStatus = _current!.status!;
-    });
-  }
-
-  // void startRecord() async {
-  //   setState(() {
-  //     micOn = true;
-  //   });
-  //   if (audioController.isRecordPlaying) {
-  //     audioController.PauseAudio();
-  //   }
-  //
-  //   if (hasPermission) {
-  //     recordFilePath = await getFilePath();
-  //     recorder = AnotherAudioRecorder(recordFilePath,
-  //         audioFormat: AudioFormat.AAC); // .wav .aac .m4a
-  //     await recorder.initialized;
-  //     await recorder.start();
-  //     await recorder.current(channel: 0);
-  //     Toaster.show(context, "Start Recording"); // });
-  //   } else {
-  //     openAppSettings();
-  //     Fluttertoast.showToast(
-  //         msg: 'Permission is not granted', backgroundColor: Colors.grey);
-  //   }
-  //   setState(() {});
-  // }
-  //
-  // void stopRecord() async {
-  //   try {
-  //     var result = await recorder.stop();
-  //     if (result != null) {
-  //       recordFilePath = result.path ?? "";
-  //       _playAudio = "upload";
-  //       audioController.isRecording.value = false;
-  //       audioController.isSending.value = true;
-  //       Toaster.show(context, "Stop Recording");
-  //       setState(() {
-  //         micOn = false;
-  //       });
-  //     }
-  //     // ClearRecorder();
-  //   } catch (e) {
-  //     print(">>>>>>${e}");
-  //   }
-  // }
-  //
   void ClearRecorder()async{
-    // audioController.onClose();
-    await _recorder?.stop();
+    audioController.onClose();
+    await recorder?.stop();
+    // await recorder?.
     _playAudio = "";
     voice_record = "";
     recordFilePath = "";
@@ -3973,14 +3879,14 @@ class _MyHomePageState extends State<EditProfile>
                                                 msg:
                                                     "This is a premium feature, please purchase a package to use this feature.");
                                           } else {
-                                            // startRecord();
-                                            _start();
+                                            startRecord();
+                                            // _start();
                                           }
                                         },
                                         onLongPressEnd: (details) {
                                           if (user_plan != "Free") {
-                                            // stopRecord();
-                                            _stop();
+                                            stopRecord();
+                                            // _stop();
                                           }
                                         },
                                         child: Icon(
