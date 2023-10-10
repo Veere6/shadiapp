@@ -207,10 +207,6 @@ class _ChatState extends State <Chat> {
   //   return difference;
   // }
 
-
-
-
-
   Future<int> getUnreadMessageCount(String room_id) async {
     int unreadCount = 0;
 
