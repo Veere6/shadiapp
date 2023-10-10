@@ -1884,17 +1884,17 @@ class _MyHomePageState extends State<EditProfile>
                                                 return GestureDetector(
                                                   onTap: () {
                                                     setState(() {
-                                                      addPrefs(prefList![index]
-                                                          .id
-                                                          .toString());
-                                                      if (prefList[index]
-                                                              .is_select ==
-                                                          true) {
-                                                        prefList[index]
-                                                            .is_select = false;
-                                                      } else {
-                                                        prefList[index]
-                                                            .is_select = true;
+                                                      addPrefs(prefList![index].id.toString());
+                                                      if (prefList.where((item) => item?.is_select ??false).length < 4){
+                                                        if (prefList[index]
+                                                            .is_select ==
+                                                            true) {
+                                                          prefList[index]
+                                                              .is_select = false;
+                                                        } else {
+                                                          prefList[index]
+                                                              .is_select = true;
+                                                        }
                                                       }
                                                     });
                                                     // setState(() {

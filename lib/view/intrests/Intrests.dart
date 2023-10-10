@@ -306,10 +306,12 @@ class _MyHomePageState extends State<Intrests> {
                               onTap: () {
                                 setState(() {
                                   addPrefs(prefList![index].id.toString());
-                                  if (prefList[index].is_select==true) {
-                                    prefList[index].is_select=false;
-                                  }else{
-                                    prefList[index].is_select=true;
+                                  if (prefList.where((item) => item?.is_select ??false).length < 4){
+                                    if (prefList[index].is_select==true) {
+                                      prefList[index].is_select=false;
+                                    }else{
+                                      prefList[index].is_select=true;
+                                    }
                                   }
                                 });
                               },
