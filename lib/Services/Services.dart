@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:shadiapp/Models/CasteModel.dart';
 import 'package:shadiapp/Models/DropdownModel.dart';
 import 'package:shadiapp/Models/ReligionModel.dart';
+import 'package:shadiapp/Models/add_live_model.dart';
 import 'package:shadiapp/Models/add_location_model.dart';
 import 'package:shadiapp/Models/age_height_range_model.dart';
 import 'package:shadiapp/Models/city_list_model.dart';
@@ -34,6 +35,7 @@ import 'package:shadiapp/Models/user_view_preference_model.dart';
 import 'package:shadiapp/Models/verifiedModel.dart';
 import 'package:shadiapp/Models/view_image_model.dart';
 import 'package:shadiapp/Models/view_like_sent_model.dart';
+import 'package:shadiapp/Models/view_live_model.dart';
 import 'package:shadiapp/Models/view_profile_model.dart';
 
 class Services {
@@ -76,6 +78,8 @@ class Services {
   static String ImageUpdate = BaseUrl + "user/updateImage/";
   static String subscribePlan = BaseUrl + "subscribePlan";
   static String location = BaseUrl + "location";
+  static String addLive = BaseUrl + "change_live_status";
+  static String viewLive = BaseUrl + "get_live_users";
 
   static Future<PhoneLoginModel> LoginCrdentials(String phone) async {
     final params = {
@@ -938,6 +942,44 @@ class Services {
     } else {
       var data = jsonDecode(response.body);
       AddLocationModel user = AddLocationModel.fromJson(data);
+      return user;
+
+    }
+  }
+
+  static Future<AddLiveModel> AddLiveMethod(final object) async{
+    final params = object;
+    print("AddLiveMethod " + params.toString());
+    http.Response response =
+    await http.post(Uri.parse(addLive), body: params);
+    print("AddLiveMethod" + response.body);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      AddLiveModel user = AddLiveModel.fromJson(data);
+      return user;
+    } else {
+      var data = jsonDecode(response.body);
+      AddLiveModel user = AddLiveModel.fromJson(data);
+      return user;
+
+    }
+  }
+
+  static Future<ViewLiveModel> ViewLiveMethod(final object) async{
+    final params = object;
+    print("ViewLiveMethod " + params.toString());
+    http.Response response =
+    await http.post(Uri.parse(viewLive), body: params);
+    print("ViewLiveMethod" + response.body);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      ViewLiveModel user = ViewLiveModel.fromJson(data);
+      return user;
+    } else {
+      var data = jsonDecode(response.body);
+      ViewLiveModel user = ViewLiveModel.fromJson(data);
       return user;
 
     }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shadiapp/CommonMethod/CommonColors.dart';
+import 'package:shadiapp/Models/view_live_model.dart';
+import 'package:shadiapp/Services/Services.dart';
 import 'package:shadiapp/view/home/fragment/live/LiveRoom.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LiveScreen extends StatefulWidget {
   @override
@@ -11,6 +14,10 @@ class LiveScreen extends StatefulWidget {
 class _LiveScreenState extends State<LiveScreen> {
 
   TextEditingController search = TextEditingController();
+  late ViewLiveModel _liveModel;
+  List<Datum> list = [];
+  late SharedPreferences _preferences;
+  
   var images = [
     "https://w0.peakpx.com/wallpaper/564/224/HD-wallpaper-beautiful-girl-bengali-eyes-holi-indian.jpg",
     "https://w0.peakpx.com/wallpaper/396/511/HD-wallpaper-bong-angel-bengali.jpg",
@@ -27,6 +34,24 @@ class _LiveScreenState extends State<LiveScreen> {
     "https://w0.peakpx.com/wallpaper/862/303/HD-wallpaper-jisoo-blackpink-blackpink-jisoo-k-pop.jpg",
     "https://w0.peakpx.com/wallpaper/509/744/HD-wallpaper-jisoo-blackpink-cute-k-pop-love-music.jpg",
   ];
+  Future<void> viewLive(page) async {
+    _preferences = await SharedPreferences.getInstance();
+    _liveModel = await Services.ViewLiveMethod({"page": '${page}'});
+    if(_liveModel.status == true){
+      for(int i = 0; i < _liveModel.data!.length; i++){
+       list = _liveModel.data ?? <Datum> [];
+      }
+    }
+    setState(() {
+
+    });
+  }
+
+  @override
+  void initState() {
+    viewLive(1);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,19 +82,20 @@ class _LiveScreenState extends State<LiveScreen> {
            Expanded(
              child: Container(
                margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
-               child: images.isNotEmpty ? GridView.builder(
+               child: list.isNotEmpty ? GridView.builder(
                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                        crossAxisCount: 2,
                        crossAxisSpacing: 2.0,
                        mainAxisSpacing: 10.0),
-                   itemCount: images.length,
+                   itemCount: list.length,
                    itemBuilder: (context, index){
+                     Datum data = list[index];
                      return Container(
                        child: InkWell(
                          onTap: (){
                            Navigator.of(context).push(
                                MaterialPageRoute(
-                                   builder: (context) => LiveRoom(images[index]
+                                   builder: (context) => LiveRoom(images[index], '${data.channelName}', '${data.token}', true, false
                                    ))
                            );
                          },

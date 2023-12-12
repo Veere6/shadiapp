@@ -1,7 +1,14 @@
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:shadiapp/CommonMethod/CommonColors.dart';
+import 'package:shadiapp/CommonMethod/Toaster.dart';
+import 'package:shadiapp/Models/add_live_model.dart';
+import 'package:shadiapp/Services/Services.dart';
+import 'package:shadiapp/ShadiApp.dart';
+import 'package:shadiapp/view/home/fragment/live/LiveRoom.dart';
 import 'package:shadiapp/view/home/fragment/live/fragments/LiveScreen.dart';
 import 'package:shadiapp/view/home/fragment/live/fragments/MyMatches.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Live extends StatefulWidget {
   @override
@@ -39,8 +46,19 @@ class _LiveState extends State<Live> with TickerProviderStateMixin{
                        borderRadius: BorderRadius.all(
                            Radius.circular(5.0))
                      ),
-                     child: Text("GoLIVE",
-                     style: TextStyle(color: Color(0xff1E1E1E), fontSize: 11.0, fontWeight: FontWeight.w600),),
+                     child: InkWell(
+                       onTap: ()async{
+                         SharedPreferences _prefs = await SharedPreferences.getInstance();
+                         Navigator.of(context).push(
+                             MaterialPageRoute(
+                                 builder: (context) => LiveRoom(
+                                     "https://w0.peakpx.com/wallpaper/396/511/HD-wallpaper-bong-angel-bengali.jpg", '${_prefs.getString(ShadiApp.userId)}', "", true, true
+                                 ))
+                         );
+                       },
+                       child: Text("GoLIVE",
+                       style: TextStyle(color: Color(0xff1E1E1E), fontSize: 11.0, fontWeight: FontWeight.w600),),
+                     ),
                    ),
                  )
                ],

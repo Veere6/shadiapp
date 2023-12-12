@@ -349,6 +349,7 @@ class _ChatRoom extends State<ChatRoom> {
         .child('audio')
         .child("audio/${DateTime.now().millisecondsSinceEpoch.toString()}");
     UploadTask uploadTask = ref.putFile(File(recordFilePath));
+
     try {
       TaskSnapshot snapshot = await uploadTask;
       audioURL = await snapshot.ref.getDownloadURL();

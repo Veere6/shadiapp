@@ -71,6 +71,8 @@ dependencies:
   flutter_stripe: ^9.3.0
   carousel_slider: ^4.2.1
   carousel_indicator: ^1.0.6
+  agora_rtc_engine: ^6.2.4
+  agora_token_service: ^0.1.2
 
 dev_dependencies:
   flutter_test:
