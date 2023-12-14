@@ -43,6 +43,7 @@ class Services {
 
   static String Login = BaseUrl + "login";
   static String GoogleLogin = BaseUrl + "google/login";
+  static String facebookLogin = BaseUrl + "facebook/login";
   static String match_list = BaseUrl + "own/matches";
   static String OtpVerify = BaseUrl + "otp-verify";
   static String UserDetail = BaseUrl + "userDetails";
@@ -152,6 +153,20 @@ class Services {
       throw Exception('Failed');
     }
   }
+  static Future<OtpVerifyModel> FaceBookCrdentials(String token) async {
+    final params = {"token": token};
+    print("FaceBookCrdentials " + params.toString());
+    http.Response response = await http.post(Uri.parse(facebookLogin), body: params);
+    print("FaceBookCrdentials" + response.body);
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      OtpVerifyModel user = OtpVerifyModel.fromJson(data);
+      return user;
+    } else {
+      print(response.body);
+      throw Exception('Failed');
+    }
+  }
   static Future<MatchList> MatchListMethod(String user_id) async {
     final params = {"id": user_id};
     // final params = {"id": "6452535298f7692c6a731291"};
@@ -233,7 +248,9 @@ class Services {
       UserDetailModel user = UserDetailModel.fromJson(data);
       return user;
     } else {
-      throw Exception('Failed');
+      var data = json.decode(response2.body);
+      UserDetailModel user = UserDetailModel.fromJson(data);
+      return user;
     }
   }
   static Future<UserDetailModel> OtherUserDetailMethod(String uId) async {

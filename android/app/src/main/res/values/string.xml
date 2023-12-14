@@ -3,12 +3,12 @@
 
     <string name="app_name">Shaadiapp</string>
 <!--test mode-->
-<!--    <string name="facebook_app_id">215944121403570</string>-->
-<!--    <string name="facebook_client_token">ab99c679acead4b64e10a1aea149c836</string>-->
-<!--    live mode-->
-    <string name="facebook_app_id">650490860384715</string>
-    <string name="facebook_client_token">99350a605644801eb13165e579370f84</string>
+    <string name="facebook_app_id">7110008692367211</string>
+    <string name="fb_login_protocol_scheme">fb7110008692367211</string>
+    <string name="facebook_client_token">05793a4779e980a424a5bd00e371c826</string>
     <string name="callbackurl">https://shaadiapp-ac9ac.firebaseapp.com/__/auth/handler</string>
 
-
+<!--    <string name="facebook_app_id">650490860384715</string>-->
+<!--    <string name="fb_login_protocol_scheme">fb650490860384715</string>-->
+<!--    <string name="facebook_client_token">99350a605644801eb13165e579370f84</string>-->
 </resources>

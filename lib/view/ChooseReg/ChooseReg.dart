@@ -70,17 +70,23 @@ class _MyHomePageState extends State<ChooseReg> {
       // Send access token to server for validation and auth
         final FacebookAccessToken? accessToken = res.accessToken;
         print('Access token: ${accessToken?.token}');
+        if(accessToken?.token?.isNotEmpty ?? false){
+          FaceBookLoginMethod("${accessToken?.token}");
+        }
         // Get profile data
-        final profile = await fb.getUserProfile();
-        print('Hello, ${profile?.name}! You ID: ${profile?.userId}');
-        // Get user profile image url
-        final imageUrl = await fb.getProfileImageUrl(width: 100);
-        print('Your profile image: $imageUrl');
-        // Get email (since we request email permission)
-        final email = await fb.getUserEmail();
-        // But user can decline permission
-        if (email != null)
-          print('And your email is $email');
+        // final profile = await fb.getUserProfile();
+        // print('Hello, ${profile?.name}! You ID: ${profile?.userId}');
+        // // Get user profile image url
+        // final imageUrl = await fb.getProfileImageUrl(width: 100);
+        // print('Your profile image: $imageUrl');
+        // // Get email (since we request email permission)
+        // final email = await fb.getUserEmail();
+        // // But user can decline permission
+        // if (email != null)
+        //   print('And your email is $email');
+        //
+
+
         break;
       case FacebookLoginStatus.cancel:
       // User cancel log in
@@ -163,6 +169,30 @@ class _MyHomePageState extends State<ChooseReg> {
       clickLoad = false;
     });
   }
+
+  Future<void> FaceBookLoginMethod(String token) async {
+    setState(() {
+      clickLoad = true;
+    });
+    otpVerifyModel = await Services.FaceBookCrdentials(token);
+    if(otpVerifyModel.status == 1){
+      _preferences?.setString(ShadiApp.userId,otpVerifyModel.data?.id ?? "");
+      _preferences?.setBool(ShadiApp.status, true);
+      // Toaster.show(context, otpVerifyModel.massege.toString());
+      print("${otpVerifyModel.data!.profilePercentage}????");
+      if(otpVerifyModel.data!.profilePercentage! >= 70){
+        Navigator.of(context).pushNamed('Home');
+      }else{
+        Navigator.of(context).pushNamed('CountryCity');
+      }
+    }else{
+      Toaster.show(context, otpVerifyModel.massege.toString());
+    }
+    setState(() {
+      clickLoad = false;
+    });
+  }
+
 
 
   final String cookie_policy = 'http://52.63.253.231:4000/cookie';

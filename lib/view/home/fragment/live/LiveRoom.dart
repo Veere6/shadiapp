@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shadiapp/CommonMethod/CommonColors.dart';
+import 'package:shadiapp/Models/view_profile_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../CommonMethod/Toaster.dart';
@@ -57,37 +58,172 @@ class _LiveRoomState extends State<LiveRoom> {
 
   TextEditingController comment = TextEditingController();
 
-  var message = [
-    "hi",
-    "how are you",
-    "where are you from",
-    "kya haal hai",
-    "you are looking so good i am just want to see you soon as soon as posible."
-  ];
+  // var message = [
+  //   "hi",
+  //   "how are you",
+  //   "where are you from",
+  //   "kya haal hai",
+  //   "you are looking so good i am just want to see you soon as soon as posible."
+  // ];
   late AddLiveModel _addLiveModel;
   late SharedPreferences _preferences;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> sendMessage(String roomId, String message, String userId) {
-    return _firestore.collection('chatroom').add({
-      'text': message,
-      'sender': userId,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+
+  void sendMessage(String roomId, String _message, String userId) async {
+
+    if (_message.isNotEmpty) {
+      Map<String, dynamic> chatData = {
+        "uid": "${user_id}",
+        "name": "${username}",
+        "message": _message,
+        "image": user_image,
+        "time": FieldValue.serverTimestamp(),
+      };
+
+      comment.clear();
+      await _firestore
+          .collection('groups')
+          .doc("${user_id}")
+          .collection('chats')
+          .add(chatData);
+
+      // _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+      //     duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+
+    } else {
+      print("Enter Some Text");
+    }
   }
+
+
+  // Future<void> sendMessage(String roomId, String message, String userId) {
+  //   return _firestore.collection('chatroom').add({
+  //     'text': message,
+  //     'sender': userId,
+  //     'timestamp': FieldValue.serverTimestamp(),
+  //   });
+  // }
 
   @override
   void initState() {
     super.initState();
     // Set up an instance of Agora engine
+    viewProfile();
     _isJoined = widget._isJoined;
     _isHost = widget._isHost;
     if (_isHost) {
       addLive(true);
     }
     setupVideoSDKEngine();
+
   }
+
+  List<Map<String, dynamic>> membersList = [];
+
+  String username="";
+  String user_image="";
+  late ViewProfileModel _viewProfileModel = ViewProfileModel();
+  String user_id="";
+
+  Future<void> viewProfile() async {
+    _preferences = await SharedPreferences.getInstance();
+    user_id = _preferences.getString(ShadiApp.userId).toString();
+    _viewProfileModel = await Services.ProfileView(_preferences.getString(ShadiApp.userId).toString());
+    if(_viewProfileModel.status ==1){
+      username = "${_viewProfileModel.data![0].firstName![0].toUpperCase()+_viewProfileModel.data![0].firstName!.substring(1)}";
+          // " ${_viewProfileModel.data![0].lastName![0].toUpperCase()+_viewProfileModel.data![0].lastName!.substring(1)}";
+      user_image = "${_viewProfileModel.data?[0].image}";
+    }
+    getCurrentUserDetails();
+    addmembers("${user_id}","${username}");
+    setState(() {});
+  }
+  void getCurrentUserDetails() async {
+
+    membersList.add({
+      "name": username,
+      "uid": "${_preferences.getString(ShadiApp.userId).toString()}",
+      "image":user_image,
+      "isAdmin": false,
+    });
+  }
+
+  int groupsize = 1;
+  void addmembers(String groupID, groupname) async {
+    try {
+      await _firestore.collection('groups').doc(groupID).get().then((map) {
+        try {
+          groupsize = map["size"];
+          for (int i = 0; i < map.get("members").length; i++) {
+            String? uid = membersList[i]['uid'];
+            if (uid != map.get("members")[i]['uid']) {
+              membersList.add({
+                "name": map.get("members")[i]['name'],
+                "uid": map.get("members")[i]['uid'],
+                "image": map.get("members")[i]['image'],
+                "isAdmin": false,
+              });
+            } else {
+              groupsize--;
+            }
+          }
+          adduser(groupID, groupname);
+        } catch (error) {
+          createGroup(groupID, groupname);
+          // print(error);
+        }
+      });
+    } catch (error) {
+      createGroup(groupID, groupname);
+      // print(error);
+    }
+  }
+
+
+  void adduser(String groupId, String _groupName) async {
+    print(groupId + ",<<>>" + _groupName);
+    await _firestore.collection('groups').doc(groupId).update({
+      "name": _groupName,
+      "id": groupId,
+      "size": groupsize + 1,
+      "members": FieldValue.arrayUnion(membersList)
+    }).then((value) {
+      sendMessage(ShadiApp.userId, "${username} just joined", ShadiApp.userId);
+      //  _firestore.collection('groups').doc(groupId).collection('chats').add({
+      //   "message": "${username} just joined",
+      //    "name":username,
+      //    "image":user_image,
+      //   "type": "notify",
+      // });
+    });
+  }
+
+  void createGroup(String groupId, String _groupName) async {
+    print(groupId + ",>>" + _groupName);
+    await _firestore.collection('groups').doc(groupId).set({
+      "name": _groupName,
+      "id": groupId,
+      "size": groupsize,
+      "members": membersList,
+    }).then((value) {
+      sendMessage(ShadiApp.userId, "${username} Created This Group.", ShadiApp.userId);
+      // _firestore.collection('groups').doc(groupId).collection('chats').add({
+      //   "message": "${username} Created This Group.",
+      //   "name":username,
+      //   "image":user_image,
+      //   "type": "notify",
+      // });
+    });
+    // }
+
+    // await _firestore.collection('groups').doc(groupId).collection('chats').add({
+    //   "message": "${_auth.currentUser!.displayName} Created This Group.",
+    //   "type": "notify",
+    // });
+  }
+
 
   Future<void> addLive(status) async {
     final token1 = RtcTokenBuilder.build(
@@ -98,6 +234,7 @@ class _LiveRoomState extends State<LiveRoom> {
       role: role,
       expireTimestamp: expireTimestamp,
     );
+
 
     print('token: $token1');
     // token = token1;
@@ -341,15 +478,24 @@ class _LiveRoomState extends State<LiveRoom> {
                         borderRadius: BorderRadius.circular(20.0),
                           child: _videoPanel())),
                   Expanded(
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: null,
+                    child:
+                    user_id!="" ? StreamBuilder<QuerySnapshot>(
+                      stream: _firestore
+                          .collection('groups')
+                          .doc("${user_id}")
+                          .collection('chats')
+                          .orderBy('time')
+                          .snapshots(),
                       builder: (context, snapshot) {
-                        return ListView.builder(
-                            itemCount: message.length,
-                            reverse: true,
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.symmetric(horizontal: 33),
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            // controller: _scrollController,
+                            padding: const EdgeInsets.all(5),
+                            itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
+                              Map<String, dynamic> chatMap =
+                              snapshot.data!.docs[index].data()
+                              as Map<String, dynamic>;
                               return Container(
                                 margin: const EdgeInsets.symmetric(vertical: 5),
                                 child: Row(
@@ -357,13 +503,13 @@ class _LiveRoomState extends State<LiveRoom> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Container(
-                                        // margin: EdgeInsets.all(8.0),
+                                      // margin: EdgeInsets.all(8.0),
                                         height: 34,
                                         width: 34,
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(17.0),
                                           child: Image.network(
-                                            widget.image,
+                                            "${chatMap["image"]=="null" ? "${widget.image}":"${chatMap["image"]}"}",
                                             height: 34,
                                             width: 34,
                                             fit: BoxFit.cover,
@@ -377,19 +523,19 @@ class _LiveRoomState extends State<LiveRoom> {
                                         alignment: Alignment.centerLeft,
                                         child: Column(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          MainAxisAlignment.start,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              message[index],
+                                            chatMap['name'],
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w400),
                                             ),
                                             Text(
-                                              "Arun just joined",
+                                              chatMap['message'],
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 10,
@@ -402,9 +548,79 @@ class _LiveRoomState extends State<LiveRoom> {
                                   ],
                                 ),
                               );
-                            });
-                      }
-                    ),
+                            },
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                    ):Container(),
+
+
+                    // StreamBuilder<QuerySnapshot>(
+                    //   stream: null,
+                    //   builder: (context, snapshot) {
+                    //     return ListView.builder(
+                    //         itemCount: message.length,
+                    //         reverse: true,
+                    //         shrinkWrap: true,
+                    //         padding: const EdgeInsets.symmetric(horizontal: 33),
+                    //         itemBuilder: (context, index) {
+                    //           return Container(
+                    //             margin: const EdgeInsets.symmetric(vertical: 5),
+                    //             child: Row(
+                    //               mainAxisAlignment: MainAxisAlignment.center,
+                    //               crossAxisAlignment: CrossAxisAlignment.center,
+                    //               children: [
+                    //                 Container(
+                    //                     // margin: EdgeInsets.all(8.0),
+                    //                     height: 34,
+                    //                     width: 34,
+                    //                     child: ClipRRect(
+                    //                       borderRadius: BorderRadius.circular(17.0),
+                    //                       child: Image.network(
+                    //                         widget.image,
+                    //                         height: 34,
+                    //                         width: 34,
+                    //                         fit: BoxFit.cover,
+                    //                       ),
+                    //                     )),
+                    //                 SizedBox(
+                    //                   width: 12,
+                    //                 ),
+                    //                 Expanded(
+                    //                   child: Container(
+                    //                     alignment: Alignment.centerLeft,
+                    //                     child: Column(
+                    //                       mainAxisAlignment:
+                    //                           MainAxisAlignment.start,
+                    //                       crossAxisAlignment:
+                    //                           CrossAxisAlignment.start,
+                    //                       children: [
+                    //                         Text(
+                    //                           message[index],
+                    //                           style: TextStyle(
+                    //                               color: Colors.white,
+                    //                               fontSize: 12,
+                    //                               fontWeight: FontWeight.w400),
+                    //                         ),
+                    //                         Text(
+                    //                           "Arun just joined",
+                    //                           style: TextStyle(
+                    //                               color: Colors.white,
+                    //                               fontSize: 10,
+                    //                               fontWeight: FontWeight.w400),
+                    //                         ),
+                    //                       ],
+                    //                     ),
+                    //                   ),
+                    //                 )
+                    //               ],
+                    //             ),
+                    //           );
+                    //         });
+                    //   }
+                    // ),
                   ),
                   Container(
                     margin: const EdgeInsets.only(
@@ -424,13 +640,20 @@ class _LiveRoomState extends State<LiveRoom> {
                             // margin: EdgeInsets.only(left: 0, top: 20, right: 5.0 , bottom: 20.0),
                             child: Padding(
                               padding: const EdgeInsets.only(
-                                  left: 15.0, right: 15.0),
+                                  left: 15.0, right: 5.0),
                               child: TextField(
                                 textCapitalization:
                                     TextCapitalization.sentences,
                                 controller: comment,
                                 maxLines: 1,
                                 decoration: InputDecoration(
+                                  suffixIcon: InkWell(
+                                    onTap: (){
+                                      sendMessage(ShadiApp.userId, comment.text, ShadiApp.userId);
+                                      comment.text="";
+                                    },
+                                    child: Icon(Icons.send,color: Colors.white,),
+                                  ),
                                   isDense: true,
                                   border: InputBorder.none,
                                   hintText: 'Add Comment',
@@ -455,6 +678,7 @@ class _LiveRoomState extends State<LiveRoom> {
                         ),
                         // Expanded(
                         //   child:
+
                         Padding(
                           padding: const EdgeInsets.only(right: 5.0, left: 5),
                           child: Column(

@@ -143,18 +143,24 @@ void navigateUser(BuildContext context,String firebasetoken) async{
     UserDetailModel _userDetailModel = await Services.UserDetailMethod("${_preferences?.getString(ShadiApp.userId).toString()}");
     updateUserPresence(userId,true);
     int percent=0;
-    _preferences.setBool(ShadiApp.isOnline, _userDetailModel.data?[0].isOnline ?? false);
-    percent = _userDetailModel.data?[0].profilePercentage ?? 0;
-    percent = _userDetailModel.data?[0].profilePercentage ?? 0;
-    _preferences.setString(ShadiApp.user_plan, _userDetailModel.data?[0].plan ?? "");
-    print(percent);
-    if(percent >= 70){
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        'Home',
-            (Route<dynamic> route) => false,
-      );
+    if(_userDetailModel.status!=0) {
+      _preferences.setBool(
+          ShadiApp.isOnline, _userDetailModel.data?[0].isOnline ?? false);
+      percent = _userDetailModel.data?[0].profilePercentage ?? 0;
+      // percent = _userDetailModel.data?[0].profilePercentage ?? 0;
+      _preferences.setString(
+          ShadiApp.user_plan, _userDetailModel.data?[0].plan ?? "");
+      print(percent);
+      if (percent >= 70) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          'Home', (Route<dynamic> route) => false,
+        );
+      } else {
+        Navigator.of(context).pushNamed('CountryCity');
+      }
     }else{
-      Navigator.of(context).pushNamed('CountryCity');
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => ChooseReg()), (route) => false);
     }
     // Navigator.of(context).pushAndRemoveUntil(
     //     MaterialPageRoute(builder: (context) => Home()), (route) => false);
