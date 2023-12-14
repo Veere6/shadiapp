@@ -85,7 +85,7 @@ class _LiveRoomState extends State<LiveRoom> {
       comment.clear();
       await _firestore
           .collection('groups')
-          .doc("${user_id}")
+          .doc("${channelName}")
           .collection('chats')
           .add(chatData);
 
@@ -110,12 +110,16 @@ class _LiveRoomState extends State<LiveRoom> {
   void initState() {
     super.initState();
     // Set up an instance of Agora engine
-    viewProfile();
+
     _isJoined = widget._isJoined;
+    _isHost = widget._isHost;
+    token = widget.token;
+    channelName = widget.channelName;
     _isHost = widget._isHost;
     if (_isHost) {
       addLive(true);
     }
+    viewProfile();
     setupVideoSDKEngine();
 
   }
@@ -137,7 +141,7 @@ class _LiveRoomState extends State<LiveRoom> {
       user_image = "${_viewProfileModel.data?[0].image}";
     }
     getCurrentUserDetails();
-    addmembers("${user_id}","${username}");
+    addmembers("${channelName}","${username}");
     setState(() {});
   }
   void getCurrentUserDetails() async {
