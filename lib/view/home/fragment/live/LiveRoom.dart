@@ -31,13 +31,12 @@ const String appId = "c21ae17d2d9046478dafcaf516e68b3c";
 class _LiveRoomState extends State<LiveRoom> {
   String channelName = "test";
   String token =
-      "007eJxTYPiWoG7afunk702fCxx+/f98K2kp37IJx/e3RyUGcdYr2V5XYEg2MkxMNTRPMUqxNDAxMzG3SElMS05MMzU0SzWzSDJO5lDLTm0IZGQo+WjGwAiFID4LQ0lqcQkDAwAibSFz";
+      "007eJxTYMjvc4iYExIhrH6Nb3KB/JzAJivmnoc8WadlMra+XLPG5IcCQ7KRYWKqoXmKUYqlgYmZiblFSmJacmKaqaFZqplFknHyyW/VqQ2BjAziqdnMjAwQCOKzMJSkFpcwMAAAz7Aecw==";
 
   int? _remoteUid; // uid of the remote user
   int uid = 0; // uid of the local user
   bool _isJoined = false; // Indicates if the local user has joined the channel
-  bool _isHost =
-      true; // Indicates whether the user has joined as a host or audience
+  bool _isHost = true; // Indicates whether the user has joined as a host or audience
   late RtcEngine agoraEngine;
   bool isLoading = false;
   final role = RtcRole.publisher;
@@ -85,7 +84,7 @@ class _LiveRoomState extends State<LiveRoom> {
       comment.clear();
       await _firestore
           .collection('groups')
-          .doc("${channelName}")
+          .doc("${widget.channelName}")
           .collection('chats')
           .add(chatData);
 
@@ -113,8 +112,8 @@ class _LiveRoomState extends State<LiveRoom> {
 
     _isJoined = widget._isJoined;
     _isHost = widget._isHost;
-    token = widget.token;
-    channelName = widget.channelName;
+    // token = widget.token;
+    // channelName = widget.channelName;
     _isHost = widget._isHost;
     if (_isHost) {
       addLive(true);
@@ -141,7 +140,7 @@ class _LiveRoomState extends State<LiveRoom> {
       user_image = "${_viewProfileModel.data?[0].image}";
     }
     getCurrentUserDetails();
-    addmembers("${channelName}","${username}");
+    addmembers("${widget.channelName}","${username}");
     setState(() {});
   }
   void getCurrentUserDetails() async {
@@ -185,6 +184,9 @@ class _LiveRoomState extends State<LiveRoom> {
     }
   }
 
+  void deleteGroup(String groupId) async {
+    _firestore.collection('groups').doc(groupId).delete();
+  }
 
   void adduser(String groupId, String _groupName) async {
     print(groupId + ",<<>>" + _groupName);
@@ -246,7 +248,7 @@ class _LiveRoomState extends State<LiveRoom> {
     _addLiveModel = await Services.AddLiveMethod({
       'userId': '${_preferences.getString(ShadiApp.userId)}',
       'status': '${status}',
-      'channelName': '${channelName}'
+      'channelName': '${widget.channelName}'
     });
     if (_addLiveModel.status == true) {
       // token = "${_addLiveModel.data}";
@@ -350,6 +352,7 @@ class _LiveRoomState extends State<LiveRoom> {
     agoraEngine.release();
     if (_isHost) {
       addLive(false);
+      deleteGroup("${widget.channelName}");
     }
     super.dispose();
   }
@@ -431,6 +434,7 @@ class _LiveRoomState extends State<LiveRoom> {
                             leave();
                             if (_isHost) {
                               addLive(false);
+                              deleteGroup("${widget.channelName}");
                             } else {
                               Navigator.of(context).pop();
                             }
@@ -486,7 +490,7 @@ class _LiveRoomState extends State<LiveRoom> {
                     user_id!="" ? StreamBuilder<QuerySnapshot>(
                       stream: _firestore
                           .collection('groups')
-                          .doc("${user_id}")
+                          .doc("${widget.channelName}")
                           .collection('chats')
                           .orderBy('time')
                           .snapshots(),
@@ -517,6 +521,12 @@ class _LiveRoomState extends State<LiveRoom> {
                                             height: 34,
                                             width: 34,
                                             fit: BoxFit.cover,
+                                            errorBuilder: (context, stacktrace, error){
+                                              return Image.network(widget.image,
+                                                height: 34,
+                                                width: 34,
+                                                fit: BoxFit.cover);
+                                            },
                                           ),
                                         )),
                                     SizedBox(
