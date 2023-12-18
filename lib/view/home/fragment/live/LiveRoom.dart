@@ -183,9 +183,19 @@ class _LiveRoomState extends State<LiveRoom> {
       // print(error);
     }
   }
-
   void deleteGroup(String groupId) async {
-    _firestore.collection('groups').doc(groupId).delete();
+    // Create a Firestore batch
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    // Query and delete all documents in the "chats" subcollection
+    QuerySnapshot chatSnapshot = await FirebaseFirestore.instance.collection("groups").doc(groupId).collection("chats").get();
+    for (QueryDocumentSnapshot chatDocument in chatSnapshot.docs) {
+      batch.delete(FirebaseFirestore.instance.collection("groups").doc(groupId).collection("chats").doc(chatDocument.id));
+    }
+    // Delete the main document with groupId
+    batch.delete(FirebaseFirestore.instance.collection("groups").doc(groupId));
+
+    // Commit the batched write
+    await batch.commit();
   }
 
   void adduser(String groupId, String _groupName) async {
